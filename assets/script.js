@@ -14,12 +14,30 @@ document.addEventListener('DOMContentLoaded', function() {
         scroll.scrollIntoView(false);
     };
 
+    var hasBody = $('has-body');
+    (function() {
+        var x = function() {
+            $('body-container').hidden = !hasBody.checked;
+        };
+        x();
+        hasBody.addEventListener('change', x);
+    })();
+
+    var form = document.forms.form;
     $('form').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        var method = $('method').value;
-        var url = $('url').value;
-        var withCredentials = $('withCredentials').checked;
+        var method = form['method'].value;
+        var url = form['url'].value;
+        var withCredentials = form['withCredentials'].checked;
+
+        var body = null;
+        var contentType = '';
+
+        if (hasBody.checked) {
+            contentType = form['content-type'].value;
+            body = form['body'].value;
+        }
 
         log(`[*] ${method} ${url}`, xhr);
 
@@ -33,7 +51,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 log(`[+] loading: ${xhr.status} ${xhr.statusText}`, xhr);
             } else { // 4
                 log(`[+] done: ${xhr.status} ${xhr.statusText}`, xhr);
-                log(JSON.stringify(xhr.responseText, null, 4));
+
+                var response = xhr.responseText;
+
+                try {
+                    response = JSON.parse(response);
+                } catch {
+                    // ignore
+                }
+
+                log(JSON.stringify(response, null, 4));
             }
         });
 
@@ -47,6 +74,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         xhr.open(method, url, true);
         xhr.withCredentials = withCredentials;
-        xhr.send(null);
+        if(contentType) {
+            xhr.setRequestHeader('Content-Type', contentType);
+        }
+        xhr.send(body);
     });
 });

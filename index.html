@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>csrf.fun</title>
+        <meta name="description" content="Debugging browsers for fun and profit">
         <link rel="stylesheet" href="/assets/bootstrap.min.css">
         <link rel="stylesheet" href="/assets/style.css">
         <script src="/assets/script.js"></script>
@@ -24,8 +25,16 @@
                             <div class="col-md-3">
                                 <label for="method">Method</label>
                                 <select id="method" class="custom-select d-block w-100">
-                                    <option>GET</option>
-                                    <option>POST</option>
+                                    <optgroup label="CORS-safelisted">
+                                        <option>GET</option>
+                                        <option>POST</option>
+                                        <option>HEAD</option>
+                                    </optgroup>
+                                    <optgroup label="Others">
+                                        <option>DELETE</option>
+                                        <option>OPTIONS</option>
+                                        <option>PUT</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div class="col-md-9">
@@ -34,9 +43,40 @@
                             </div>
                         </div>
 
-                        <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" id="withCredentials" type="checkbox">
-                            <label class="custom-control-label" for="withCredentials">withCredentials</label>
+                        <div class="mb-4">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" id="withCredentials" type="checkbox">
+                                <label class="custom-control-label" for="withCredentials">withCredentials</label>
+                            </div>
+
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" id="has-body" type="checkbox">
+                                <label class="custom-control-label" for="has-body">Request has body</label>
+                            </div>
+                        </div>
+
+                        <div id="body-container">
+                            <div class="mb-4">
+                                <div class="custom-control custom-radio">
+                                    <input id="ct-default" name="content-type" class="custom-control-input" checked type="radio" value="">
+                                    <label class="custom-control-label" for="ct-default">Content-Type: &lt;default&gt;</label>
+                                </div>
+
+                                <div class="custom-control custom-radio">
+                                    <input id="ct-json" name="content-type" class="custom-control-input" type="radio" value=application/json">
+                                    <label class="custom-control-label" for="ct-json">Content-Type: application/json</label>
+                                </div>
+
+                                <div class="custom-control custom-radio">
+                                    <input id="ct-form" name="content-type" class="custom-control-input" type="radio" value="application/x-www-form-urlencoded">
+                                    <label class="custom-control-label" for="ct-form">Content-Type: application/x-www-form-urlencoded</label>
+                                </div>
+                            </div>
+
+
+                            <div class="mb-4">
+                                <textarea id="body" class="form-control"></textarea>
+                            </div>
                         </div>
 
                         <hr class="mb-4">
