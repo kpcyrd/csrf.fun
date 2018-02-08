@@ -1,1 +1,62 @@
-<h1>ohai</h1>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>csrf.fun</title>
+        <link rel="stylesheet" href="/assets/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/style.css">
+        <script src="/assets/script.js"></script>
+    </head>
+    <body class="bg-light">
+        <div class="container">
+            <div class="py-5 text-center">
+                <h2>csrf.fun</h2>
+
+                <p class="lead">
+                    Debugging browsers for fun <s>and profit</s>
+                </p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <form id="form">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="method">Method</label>
+                                <select id="method" class="custom-select d-block w-100">
+                                    <option>GET</option>
+                                    <option>POST</option>
+                                </select>
+                            </div>
+                            <div class="col-md-9">
+                                <label for="url">URL</label>
+                                <input id="url" class="form-control" type="url" placeholder="https://example.com/some/route" required>
+                            </div>
+                        </div>
+
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" id="withCredentials" type="checkbox">
+                            <label class="custom-control-label" for="withCredentials">withCredentials</label>
+                        </div>
+
+                        <hr class="mb-4">
+
+                        <div class="mb-3">
+                            <button class="btn btn-primary btn-large btn-block" type="submit" id="execute">Execute</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <div class="console">
+                        <pre id="console"></pre>
+                        <div id="scroll"></div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="mt-5 mb-1 text-muted text-center text-small">
+                Fork me on <a href="https://github.com/kpcyrd/csrf.fun" target="_blank">github</a>.
+            </footer>
+        </div>
+    </body>
+</html>
