@@ -79,4 +79,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         xhr.send(body);
     });
+
+    $('export').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        if(!form.reportValidity()) {
+            return;
+        }
+
+        alert('unimplemented, sry');
+    });
 });

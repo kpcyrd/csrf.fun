@@ -6,6 +6,7 @@
         <meta name="description" content="Debugging browsers for fun and profit">
         <meta property="og:image" content="https://csrf.fun/thumbnail.jpg">
         <link rel="stylesheet" href="/assets/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/octicons.css">
         <link rel="stylesheet" href="/assets/style.css">
         <script src="/assets/script.js"></script>
     </head>
@@ -83,7 +84,20 @@
                         <hr class="mb-4">
 
                         <div class="mb-3">
-                            <button class="btn btn-primary btn-large btn-block" type="submit" id="execute">Execute</button>
+                            <div class="row">
+                                <div class="col-md-9 mb-1">
+                                    <button class="btn btn-primary btn-large btn-block" type="submit" id="execute">
+                                        <span class="octicon octicon-terminal" aria-hidden="true"></span>
+                                        Execute
+                                    </button>
+                                </div>
+                                <div class="col-md-3 mb-1">
+                                    <button class="btn btn-secondary btn-large btn-block" id="export">
+                                        <span class="octicon octicon-cloud-download" aria-hidden="true"></span>
+                                        Export
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
