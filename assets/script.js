@@ -23,21 +23,12 @@ document.addEventListener('DOMContentLoaded', function() {
         hasBody.addEventListener('change', x);
     })();
 
-    var form = document.forms.form;
-    $('form').addEventListener('submit', function(e) {
-        e.preventDefault();
+    var csrf = function(cfg, done, log) {
+        done = done || function() {};
+        log = log || function() {};
 
-        var method = form['method'].value;
-        var url = form['url'].value;
-        var withCredentials = form['withCredentials'].checked;
-
-        var body = null;
-        var contentType = '';
-
-        if (hasBody.checked) {
-            contentType = form['content-type'].value;
-            body = form['body'].value;
-        }
+        var method = cfg.method;
+        var url = cfg.url;
 
         log(`[*] ${method} ${url}`, xhr);
 
@@ -49,18 +40,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 log(`[+] headers received: ${xhr.status} ${xhr.statusText}`, xhr);
             } else if(xhr.readyState == 3) {
                 log(`[+] loading: ${xhr.status} ${xhr.statusText}`, xhr);
-            } else { // 4
+            } else {
+                // readyState == 4
                 log(`[+] done: ${xhr.status} ${xhr.statusText}`, xhr);
-
-                var response = xhr.responseText;
-
-                try {
-                    response = JSON.parse(response);
-                } catch {
-                    // ignore
-                }
-
-                log(JSON.stringify(response, null, 4));
+                done(xhr.responseText);
             }
         });
 
@@ -73,20 +56,87 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         xhr.open(method, url, true);
-        xhr.withCredentials = withCredentials;
-        if(contentType) {
-            xhr.setRequestHeader('Content-Type', contentType);
+        xhr.withCredentials = cfg.withCredentials || false;
+        if(cfg.contentType) {
+            xhr.setRequestHeader('Content-Type', cfg.contentType);
         }
-        xhr.send(body);
-    });
+        xhr.send(cfg.body || null);
+    };
 
-    $('export').addEventListener('click', function(e) {
+    var generateConfig = function() {
+        var cfg = {};
+        cfg.method = form['method'].value;
+        cfg.url = form['url'].value;
+
+        if(form['withCredentials'].checked) {
+            cfg.withCredentials = true;
+        }
+
+        if (hasBody.checked) {
+            var contentType = form['content-type'].value;
+            if(contentType) {
+                cfg.contentType = contentType;
+            }
+            cfg.body = form['body'].value;
+        }
+
+        return cfg;
+    };
+
+    var form = document.forms.form;
+    $('form').addEventListener('submit', function(e) {
         e.preventDefault();
 
+        csrf(generateConfig(), function(response) {
+            try {
+                response = JSON.parse(response);
+            } catch(e) {
+                // ignore
+            }
+
+            log(JSON.stringify(response, null, 4));
+        }, log);
+    });
+
+    var uglify = function(func) {
+        return (func + '').split('\n')
+            .map(function(x) { return x.trimLeft() })
+            .filter(function(x) {
+                if(x.startsWith('//')) return false;
+                return x;
+            })
+            .join(' ');
+    };
+
+    var generateFilename = function(target) {
+        var url = new URL(target);
+
+        var pathinfo = url.pathname.substring(1);
+        if(pathinfo.length) {
+            pathinfo = pathinfo.replace(/\//g, '_');
+            pathinfo = '-' + pathinfo;
+        }
+
+        return 'csrf-' +
+            (new Date().toISOString().substring(0, 10)) + '-' +
+            url.hostname + pathinfo + '.html';
+    };
+
+    $('export').addEventListener('click', function(e) {
         if(!form.reportValidity()) {
+            e.preventDefault();
             return;
         }
 
-        alert('unimplemented, sry');
+        var code = uglify(csrf);
+
+        var cfg = generateConfig();
+        var payload = JSON.stringify(cfg, null, 4);
+
+        var fileContent = '<script>\n(' + code + ')(' + payload + ', function(x) {\n    alert(x);\n});\n</script>\n';
+        log(fileContent, cfg);
+
+        $('export').setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(fileContent));
+        $('export').setAttribute('download', generateFilename(cfg.url));
     });
 });
